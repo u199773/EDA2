@@ -1,5 +1,6 @@
 #include <stdio.h>
 
+#include "utils.h"
 typedef struct {
     char username[20];
     int age;
@@ -7,6 +8,27 @@ typedef struct {
     char location[20];
     char likes[5][20];
 } User;
+
+
+void menu_add_new_word() {
+    char word[MAX_WORD_LENGTH];
+    printf("Ingresa una palabra: ");
+    scanf("%s", word);
+    str_to_lowercase(word);
+    void insert_into_list(LinkedList* l, char* word);
+
+
+
+
+}
+
+void find_user(){
+    char word[MAX_WORD_LENGTH];
+    printf("Ingresa una palabra: ");
+    scanf("%s", word);
+    str_to_lowercase(word);
+    Node* find_in_list(LinkedList l, char* word);
+}
 
 int main() {
     int option;
@@ -30,10 +52,10 @@ int main() {
 
         switch(option) {
             case 1:
-                // Codi per insertar un nuevo usuario
-                break;
+                menu_add_new_word();
+                    break;
             case 2:
-                // Codi per listar todos los usuarios existentes
+                find_user();
                 break;
             case 3:
                 // Codi per operar como un usuario específico
@@ -65,3 +87,4 @@ int main() {
 
     return 0;
 }
+
