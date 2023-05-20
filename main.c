@@ -1,90 +1,112 @@
 #include <stdio.h>
-
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "utils.h"
-typedef struct {
+
+
+
+void get_username(Node** userList) {
     char username[20];
-    int age;
-    char email[50];
-    char location[20];
-    char likes[5][20];
-} User;
-
-
-void menu_add_new_word() {
-    char word[MAX_WORD_LENGTH];
-    printf("Ingresa una palabra: ");
-    scanf("%s", word);
-    str_to_lowercase(word);
-    void insert_into_list(LinkedList* l, char* word);
-
-
-
-
+    printf("Ingrese el nombre de usuario: ");
+    scanf("%s", username);
+    add_user(userList, username);
 }
 
-void find_user(){
+void find_user() {
     char word[MAX_WORD_LENGTH];
-    printf("Ingresa una palabra: ");
+    printf("Ingresa el usuario que quieres encontrar: ");
     scanf("%s", word);
-    str_to_lowercase(word);
-    Node* find_in_list(LinkedList l, char* word);
+    // str_to_lowercase(word);
+    // Node* find_in_list(LinkedList l, char* word);
 }
+
+void imprimir_lista(Node* userList) {
+    Node* current = userList;
+    printf("Lista de usuarios:\n");
+    while (current != NULL) {
+        imprimir_user_info(current->user);
+        current = current->next;
+    }
+}
+//Node* llamar_buscar_usuario(Node* userList) {
+   // char username[MAX_USERNAME_LENGTH];
+  //  printf("Ingrese el nombre de usuario: ");
+   // scanf("%s", username);
+
+  //  Node* usuarioEncontrado = buscar_usuario(userList, username);
+  //  return usuarioEncontrado;
+//}
+int llamar_submenu(Node* userList) {
+    char username[MAX_USERNAME_LENGTH];
+    printf("Ingrese su nombre de usuario (o '0' para regresar al menú principal): ");
+    scanf("%s", username);
+
+    if (strcmp(username, "0") == 0) {
+        // El usuario eligió regresar al menú principal
+        return 0;
+    }
+
+    Node* currentUser = buscar_usuario(userList, username);
+    if (currentUser == NULL) {
+        printf("El usuario '%s' no existe.\n", username);
+        return 1;  // Permanecer en el submenú
+    } else {
+        submenu_usuario(currentUser, userList);
+        return 1;  // Permanecer en el submenú
+    }
+}
+
+
+
 
 int main() {
+    Node* userList = NULL;
     int option;
-    User users[100];
-    int numUsers = 0;
-    int currentUserIndex = -1;
 
     do {
-        printf("\n---- Menú Principal ----\n");
+        printf("\n---- Menu Principal ----\n");
         printf("1. Insertar un nuevo usuario\n");
         printf("2. Listar todos los usuarios existentes\n");
-        printf("3. Operar como un usuario específico\n");
-        printf("4. Enviar solicitudes de amistad\n");
-        printf("5. Gestionar las solicitudes pendientes\n");
-        printf("6. Realizar una publicación\n");
-        printf("7. Listar las publicaciones del usuario seleccionado\n");
-        printf("8. Volver al menú principal\n");
-        printf("9. Salir\n");
-        printf("Seleccione una opción: ");
+        printf("3. Salir\n");
+        printf("4. Submenu\n");
+        printf("Seleccione una opcion: ");
         scanf("%d", &option);
 
-        switch(option) {
+        switch (option) {
             case 1:
-                menu_add_new_word();
-                    break;
+                get_username(&userList);
+                break;
             case 2:
-                find_user();
+                imprimir_lista(userList);
                 break;
             case 3:
-                // Codi per operar como un usuario específico
-                break;
-            case 4:
-                // Codi per enviar sol·licituts de amistat
-                break;
-            case 5:
-                // Codi per gestionar les sol·licituts pendents
-                break;
-            case 6:
-                // Codi para realitzar una publicació
-                break;
-            case 7:
-                // Codi para llistar las publicacions del usuari seleccionat
-                break;
-            case 8:
-                // No es necessita codi, simplement torna al menu principal
-                break;
-            case 9:
                 printf("¡Hasta pronto!\n");
                 break;
+            case 4:
+                while (1) {
+                    int result = llamar_submenu(userList);
+                    if (result == 0) {
+                        break;  // Regresar al menú principal
+                    }
+                }
+                break;
+
+
             default:
-                printf("Opción no válida. Seleccione una opción del 1 al 9.\n");
+                printf("Opción no válida. Seleccione una opción del 1 al 3.\n");
                 break;
         }
 
-    } while (option != 9);
+    } while (option != 4);
+
+    // Liberar memoria de la lista de usuarios
+    Node* current = userList;
+    while (current != NULL) {
+        Node* temp = current;
+        current = current->next;
+        free(temp);
+    }
 
     return 0;
 }
-
