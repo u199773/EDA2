@@ -42,12 +42,11 @@ typedef struct Queue {
 } Queue;
 
 
+// Estructura para una solicitud aceptada
 typedef struct AcceptedRequest {
     struct User* sender;  // Remitente de la solicitud
     struct AcceptedRequest* next;
 } AcceptedRequest;
-
-
 
 
 
@@ -74,12 +73,24 @@ typedef struct User {
     FriendRequest* friendRequests;
     struct Node* userFriends;
     Friend *friends;
+    AcceptedRequest* acceptedRequests;
 } User;
 
 typedef struct Node {
     User user;
     struct Node* next;
+    AcceptedRequest* acceptedRequests;
 } Node;
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -93,8 +104,8 @@ void imprimir_user_info(User user);
 Node* buscar_usuario(Node* userList, const char* username);
 void enviar_solicitud_amistad(Node** userList, const char* senderUsername);
 void gestionar_solicitudes_amistad(struct User* currentUser);
-
-
+void imprimir_solicitudes_amistad(FriendRequest* solicitudes);
+void imprimir_solicitudes_aceptadas(Friend* friends);
 
 void volver_menu_principal(int* mainOption);
 void agregar_amigo(Node* currentUser, Node* friendNode);
@@ -111,3 +122,5 @@ void initializeQueue(Queue* queue);
 int isQueueEmpty(Queue* queue);
 void enqueue(Queue* queue, struct User* user);
 struct User* dequeue(Queue* queue);
+
+

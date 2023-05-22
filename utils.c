@@ -377,6 +377,43 @@ void gestionar_solicitudes_amistad(struct User* currentUser) {
         printf("No tienes solicitudes de amistad pendientes.\n");
     }
 }
+
+void imprimir_solicitudes_amistad(FriendRequest* solicitudes) {
+    if (solicitudes == NULL) {
+        printf("No tienes solicitudes de amistad pendientes.\n");
+    } else {
+        printf("Solicitudes de amistad pendientes:\n");
+        int count = 1;
+        FriendRequest* currentRequest = solicitudes;
+        while (currentRequest != NULL) {
+            if (currentRequest->sender != NULL && currentRequest->sender->username != NULL) {
+                printf("%d. %s\n", count, currentRequest->sender->username);
+                count++;
+            }
+            currentRequest = currentRequest->next;
+        }
+    }
+}
+
+
+void imprimir_solicitudes_aceptadas(Friend* friends) {
+    if (friends == NULL) {
+        printf("No tienes solicitudes de amistad aceptadas.\n");
+    } else {
+        printf("Solicitudes de amistad aceptadas:\n");
+        int count = 1;
+        Friend* currentFriend = friends;
+        while (currentFriend != NULL) {
+            if (currentFriend->user != NULL && currentFriend->user->username != NULL) {
+                printf("%d. %s\n", count, currentFriend->user->username);
+                count++;
+            }
+            currentFriend = currentFriend->next;
+        }
+    }
+}
+
+
 // Realizar una publicación
 
 
@@ -415,9 +452,11 @@ void submenu_usuario(Node* currentUser, Node* userList) {
         printf("\n---- Submenú del Usuario ----\n");
         printf("1. Enviar solicitud de amistad\n");
         printf("2. Gestionar las solicitudes pendientes\n");
+        printf("3. Mis solicitudes\n");
+        printf("4. Mis amigos\n");
         printf("3. Realizar una publicación\n");
         printf("4. Listar las publicaciones de un usuario\n");
-        printf("5. Volver al menú principal\n");
+        printf("6. Volver al menú principal\n");
         printf("Seleccione una opción: ");
         scanf("%d", &option);
 
@@ -429,14 +468,18 @@ void submenu_usuario(Node* currentUser, Node* userList) {
                 gestionar_solicitudes_amistad(&(currentUser->user));
                 break;
             case 3:
-                // Implementa la lógica para realizar una publicación
+                imprimir_solicitudes_amistad(currentUser->user.friendRequests);
                 break;
             case 4:
-                // Implementa la lógica para listar las publicaciones de un usuario
+                imprimir_solicitudes_aceptadas(currentUser->user.friends);
+
                 break;
-            case 5:
+            case 6:
                 volver_menu_principal(&option);
                 return;  // Regresar al menú principal
+            case 7:
+
+                break;
             default:
                 printf("Opción no válida. Seleccione una opción del 1 al 5.\n");
                 break;
@@ -444,6 +487,3 @@ void submenu_usuario(Node* currentUser, Node* userList) {
 
     } while (1);
 }
-
-
-
