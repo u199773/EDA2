@@ -50,6 +50,17 @@ typedef struct AcceptedRequest {
 
 
 
+typedef struct StackNode {
+    struct User* data;
+    struct StackNode* next;
+} StackNode;
+
+// Definición de la estructura Stack
+typedef struct Stack {
+    StackNode* top;
+    int size;
+} Stack;
+
 
 
 
@@ -115,12 +126,10 @@ void submenu_usuario(Node* currentUser, Node* userList);
 void imprimir_usuario(Node* userList);
 void generar_usuarios(Node** userList, int cantidad);
 
-
+void agregar_amigos_random(User* currentUser, Node* userList);
 
 
 void initializeQueue(Queue* queue);
 int isQueueEmpty(Queue* queue);
 void enqueue(Queue* queue, struct User* user);
 struct User* dequeue(Queue* queue);
-
-

@@ -352,7 +352,7 @@ void gestionar_solicitudes_amistad(struct User* currentUser) {
             // Denegar solicitud
             printf("Has denegado la solicitud de amistad de %s.\n", sender->username);
         } else {
-            printf("Opción no válida. Seleccione 1 o 0.\n");
+            printf("Opción no valida. Seleccione 1 o 0.\n");
             enqueue(&requestQueue, sender);
         }
     }
@@ -413,6 +413,109 @@ void imprimir_solicitudes_aceptadas(Friend* friends) {
     }
 }
 
+void agregar_amigos_random(User* currentUser, Node* userList) {
+    Stack randomUsersStack;
+    randomUsersStack.top = NULL;
+    randomUsersStack.size = 0;
+
+    int totalUsers = 0;
+    Node* tempNode = userList;
+    while (tempNode != NULL) {
+        totalUsers++;
+        tempNode = tempNode->next;
+    }
+
+    Friend* currentFriend = currentUser->friends;
+
+    while (randomUsersStack.size < 3 && randomUsersStack.size < totalUsers) {
+        int randomIndex = rand() % totalUsers;
+        Node* randomNode = userList;
+        int i = 0;
+        while (randomNode != NULL && i < randomIndex) {
+            User* randomUser = &(randomNode->user);
+            int isFriend = 0;
+            Friend* tempFriend = currentFriend;
+            while (tempFriend != NULL) {
+                if (tempFriend->user == randomUser) {
+                    isFriend = 1;
+                    break;
+                }
+                tempFriend = tempFriend->next;
+            }
+
+            if (!isFriend && randomUser != currentUser) {
+                i++;
+            }
+
+            randomNode = randomNode->next;
+        }
+
+        if (randomNode != NULL) {
+            User* randomUser = &(randomNode->user);
+
+            StackNode* newNode = (StackNode*)malloc(sizeof(StackNode));
+            newNode->data = randomUser;
+            newNode->next = randomUsersStack.top;
+            randomUsersStack.top = newNode;
+            randomUsersStack.size++;
+        }
+    }
+
+    printf("Usuarios aleatorios disponibles:\n");
+    int index = 1;
+    StackNode* tempStackNode = randomUsersStack.top;
+    while (tempStackNode != NULL) {
+        User* randomUser = tempStackNode->data;
+        printf("%d. %s\n", index, randomUser->username);
+        index++;
+        tempStackNode = tempStackNode->next;
+    }
+
+    // Descartar el carácter de nueva línea residual
+    getchar();
+
+    printf("Seleccione el numero de los usuarios que desea agregar como amigos (separados por comas): ");
+    char input[100];
+    scanf("%99s", input);  // Lee un máximo de 99 caracteres para evitar desbordamiento
+
+    // Eliminar el carácter de nueva línea residual
+    input[strcspn(input, "\n")] = '\0';
+
+    char* token = strtok(input, ",");
+    while (token != NULL) {
+        int selection = atoi(token) - 1;
+        if (selection >= 0 && selection < randomUsersStack.size) {
+            StackNode* selectedNode = randomUsersStack.top;
+            int i = 0;
+            while (selectedNode != NULL && i < selection) {
+                selectedNode = selectedNode->next;
+                i++;
+            }
+            if (selectedNode != NULL) {
+                User* selectedUser = selectedNode->data;
+
+                // Crear una nueva solicitud de amistad
+                FriendRequest* newFriendRequest = (FriendRequest*)malloc(sizeof(FriendRequest));
+                newFriendRequest->sender = currentUser;
+                newFriendRequest->receiver = selectedUser;
+                newFriendRequest->next = currentUser->friendRequests;
+                currentUser->friendRequests = newFriendRequest;
+
+                printf("Has enviado una solicitud de amistad a %s.\n", selectedUser->username);
+            }
+        }
+        token = strtok(NULL, ",");
+    }
+
+    while (randomUsersStack.top != NULL) {
+        StackNode* temp = randomUsersStack.top;
+        randomUsersStack.top = randomUsersStack.top->next;
+        free(temp);
+    }
+}
+
+
+
 
 // Realizar una publicación
 
@@ -449,15 +552,16 @@ void volver_menu_principal(int* mainOption) {
 void submenu_usuario(Node* currentUser, Node* userList) {
     int option;
     do {
-        printf("\n---- Submenú del Usuario ----\n");
+        printf("\n---- Submenu del Usuario ----\n");
         printf("1. Enviar solicitud de amistad\n");
         printf("2. Gestionar las solicitudes pendientes\n");
         printf("3. Mis solicitudes\n");
         printf("4. Mis amigos\n");
+        printf("5. Agregar amigos desconocidos\n");
         printf("3. Realizar una publicación\n");
         printf("4. Listar las publicaciones de un usuario\n");
-        printf("6. Volver al menú principal\n");
-        printf("Seleccione una opción: ");
+        printf("6. Volver al menu principal\n");
+        printf("Seleccione una opcion: ");
         scanf("%d", &option);
 
         switch (option) {
@@ -474,6 +578,11 @@ void submenu_usuario(Node* currentUser, Node* userList) {
                 imprimir_solicitudes_aceptadas(currentUser->user.friends);
 
                 break;
+            case 5:
+                agregar_amigos_random(&(currentUser->user), userList);
+
+                break;
+
             case 6:
                 volver_menu_principal(&option);
                 return;  // Regresar al menú principal
@@ -481,7 +590,7 @@ void submenu_usuario(Node* currentUser, Node* userList) {
 
                 break;
             default:
-                printf("Opción no válida. Seleccione una opción del 1 al 5.\n");
+                printf("Opcion no valida. Seleccione una opcion del 1 al 5.\n");
                 break;
         }
 
