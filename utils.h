@@ -1,4 +1,5 @@
 //
+//
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -90,6 +91,9 @@ typedef struct User {
 typedef struct Node {
     User user;
     struct Node* next;
+    struct Node* prev;
+    struct Node* low;  // Puntero al nodo "low" para el ordenamiento
+    struct Node* high; // Puntero al nodo "high" para el ordenamiento
     AcceptedRequest* acceptedRequests;
 } Node;
 
@@ -108,7 +112,8 @@ typedef struct Node {
 
 
 
-
+int linear_search(const char* arr, const char* target);
+void ordenar_por_edad(Node* userList);
 void add_user(Node** userList, const char* username);
 void get_username(Node** userList);
 void imprimir_user_info(User user);
@@ -117,7 +122,7 @@ void enviar_solicitud_amistad(Node** userList, const char* senderUsername);
 void gestionar_solicitudes_amistad(struct User* currentUser);
 void imprimir_solicitudes_amistad(FriendRequest* solicitudes);
 void imprimir_solicitudes_aceptadas(Friend* friends);
-
+void buscar_usuario_por_nombre(Node* userList);
 void volver_menu_principal(int* mainOption);
 void agregar_amigo(Node* currentUser, Node* friendNode);
 void eliminar_solicitud(Node* currentUser, FriendRequest* request);
@@ -133,3 +138,5 @@ void initializeQueue(Queue* queue);
 int isQueueEmpty(Queue* queue);
 void enqueue(Queue* queue, struct User* user);
 struct User* dequeue(Queue* queue);
+
+

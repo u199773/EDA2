@@ -129,20 +129,32 @@ void generar_usuarios(Node** userList, int cantidad) {
     }
 }
 
+//Requisito de la practica, implementar un algoritmo de busqueda en teoria, concretamente un Linear Search, que mas adelante se usara para la busqueda de un usuario en concreto.
+int linear_search(const char* arr, const char* target) {
+    int i = 0;
+    while (arr[i] != '\0' && target[i] != '\0') {
+        if (arr[i] != target[i]) {
+            return -1;
+        }
+        i++;
+    }
+    if (arr[i] == '\0' && target[i] == '\0') {
+        return 0;
+    }
+    return -1;
+}
 
 
 
-
-void imprimir_usuario(Node* userList) {
+void buscar_usuario_por_nombre(Node* userList) {
     char nombreUsuario[100];
     printf("Ingrese el nombre de usuario: ");
-    fgets(nombreUsuario, sizeof(nombreUsuario), stdin);
-    nombreUsuario[strcspn(nombreUsuario, "\n")] = '\0';  // Eliminar el salto de línea del final
+    scanf("%s", nombreUsuario);
 
     Node* current = userList;
     printf("Lista de usuarios:\n");
     while (current != NULL) {
-        if (strcmp(current->user.username, nombreUsuario) == 0) {
+        if (linear_search(current->user.username, nombreUsuario) == 0) {
             printf("Nombre de usuario: %s\n", current->user.username);
             printf("Alias: %s\n", current->user.alias);
             printf("Edad: %d\n", current->user.age);
@@ -153,12 +165,60 @@ void imprimir_usuario(Node* userList) {
                 printf("- %s\n", current->user.likes[i]);
             }
             printf("\n");
-            break;
+            return;
         }
         current = current->next;
     }
+
+    printf("El usuario \"%s\" no existe.\n", nombreUsuario);
 }
 
+
+//Codigo y funcioones necessarias para implementar uno de los tipos de  Ordenacion vistos en teoria, concretamente el inserion sort.
+void ordenar_por_edad(Node* userList) {
+    Node* sortedList = NULL; // Lista ordenada inicialmente vacía
+
+    // Recorrer la lista de usuarios
+    Node* current = userList;
+    while (current != NULL) {
+        // Tomar el nodo actual y extraerlo de la lista original
+        Node* node = current;
+        current = current->next;
+        node->next = NULL;
+
+        // Insertar el nodo en la lista ordenada
+        Node* previous = NULL;
+        Node* insertPosition = sortedList;
+        while (insertPosition != NULL && insertPosition->user.age < node->user.age) {
+            previous = insertPosition;
+            insertPosition = insertPosition->next;
+        }
+        if (previous == NULL) {
+            // Insertar al inicio de la lista
+            node->next = sortedList;
+            sortedList = node;
+        } else {
+            // Insertar después del nodo previo
+            previous->next = node;
+            node->next = insertPosition;
+        }
+    }
+
+    printf("Usuarios ordenados por edad (decreciente):\n");
+    Node* currentSorted = sortedList;
+    while (currentSorted != NULL) {
+        printf("Nombre de usuario: %s, Edad: %d\n", currentSorted->user.username, currentSorted->user.age);
+        currentSorted = currentSorted->next;
+    }
+
+    // Liberar la memoria de la lista ordenada
+    Node* temp;
+    while (sortedList != NULL) {
+        temp = sortedList;
+        sortedList = sortedList->next;
+        free(temp);
+    }
+}
 
 
 
@@ -558,9 +618,11 @@ void submenu_usuario(Node* currentUser, Node* userList) {
         printf("3. Mis solicitudes\n");
         printf("4. Mis amigos\n");
         printf("5. Agregar amigos desconocidos\n");
+        printf("6. Volver al menu principal\n");
+        printf("7. Info Usuario\n");
+        printf("8. Ordenar Usuarios por edad\n");
         printf("3. Realizar una publicación\n");
         printf("4. Listar las publicaciones de un usuario\n");
-        printf("6. Volver al menu principal\n");
         printf("Seleccione una opcion: ");
         scanf("%d", &option);
 
@@ -587,7 +649,10 @@ void submenu_usuario(Node* currentUser, Node* userList) {
                 volver_menu_principal(&option);
                 return;  // Regresar al menú principal
             case 7:
-
+                buscar_usuario_por_nombre(userList);
+                break;
+            case 8:
+                ordenar_por_edad(userList);
                 break;
             default:
                 printf("Opcion no valida. Seleccione una opcion del 1 al 5.\n");
@@ -596,3 +661,5 @@ void submenu_usuario(Node* currentUser, Node* userList) {
 
     } while (1);
 }
+
+
