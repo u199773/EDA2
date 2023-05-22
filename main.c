@@ -31,14 +31,16 @@ void imprimir_lista(Node* userList) {
 //  Node* usuarioEncontrado = buscar_usuario(userList, username);
 //  return usuarioEncontrado;
 //}
-int llamar_submenu(Node* userList) {
+int llamar_submenu(Node* userList, int* mainOption) {
     char username[MAX_USERNAME_LENGTH];
-    printf("Ingrese su nombre de usuario (o '0' para regresar al menú principal): ");
+    printf("Ingrese su nombre de usuario o '0' para salir del submenu): ");
     scanf("%s", username);
 
     if (strcmp(username, "0") == 0) {
         // El usuario eligió regresar al menú principal
+        *mainOption = 1;
         return 0;
+
     }
 
     Node* currentUser = buscar_usuario(userList, username);
@@ -55,7 +57,7 @@ void generar_usuarios_proceso(Node** userList, int cantidad) {
     generar_usuarios(userList, cantidad);
 
     // Solicitar una entrada adicional para mantener la consola abierta
-    printf("\nPresione cualquier tecla para volver al menú principal...");
+    printf("\nPresione cualquier tecla para volver al menu principal...");
     getchar();
     getchar(); // Se agregan dos llamadas a getchar() para capturar la entrada del usuario
 }
@@ -64,7 +66,7 @@ void generar_usuarios_proceso(Node** userList, int cantidad) {
 
 int main() {
     Node* userList = NULL;
-    int option;
+    int mainOption = 0;
 
     do {
         printf("\n---- Menu Principal ----\n");
@@ -74,9 +76,9 @@ int main() {
         printf("4. Log in\n");
         printf("5. Ingresar 10 usuarios\n");
         printf("Seleccione una opcion: ");
-        scanf("%d", &option);
+        scanf("%d", &mainOption);
 
-        switch (option) {
+        switch (mainOption) {
             case 1:
                 get_username(&userList);
                 break;
@@ -87,24 +89,18 @@ int main() {
                 printf("¡Hasta pronto!\n");
                 break;
             case 4:
-                while (1) {
-                    int result = llamar_submenu(userList);
-                    if (result == 0) {
-                        break;  // Regresar al menú principal
-                    }
+                while (llamar_submenu(userList, &mainOption)) {
                 }
                 break;
             case 5:
                 generar_usuarios_proceso(&userList, 10);
-                option = 0; // Cambia el valor para que no termine el bucle
                 break;
-
             default:
-                printf("Opción no válida. Seleccione una opción del 1 al 5.\n");
+                printf("Opcion no válida. Seleccione una opción del 1 al 5.\n");
                 break;
         }
 
-    } while (option != 3);
+    } while (mainOption != 3);
 
     // Liberar memoria de la lista de usuarios
     Node* current = userList;

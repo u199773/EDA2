@@ -12,7 +12,7 @@ void add_user(Node** userList, const char* username) {
     Node* current = *userList;
     while (current != NULL) {
         if (strcmp(current->user.username, username) == 0) {
-            printf("El nombre de usuario ya está registrado.\n");
+            printf("El nombre de usuario ya esta registrado.\n");
             return;
         }
         current = current->next;
@@ -27,10 +27,10 @@ void add_user(Node** userList, const char* username) {
     printf("Ingrese la edad: ");
     scanf("%d", &newUser.age);
 
-    printf("Ingrese el correo electrónico: ");
+    printf("Ingrese el correo electronico: ");
     scanf("%s", newUser.email);
 
-    printf("Ingrese la ubicación actual: ");
+    printf("Ingrese la ubicacion actual: ");
     scanf("%s", newUser.location);
 
     printf("Ingrese los 5 gustos o preferencias (separe cada uno por un espacio):\n");
@@ -146,8 +146,8 @@ void imprimir_usuario(Node* userList) {
             printf("Nombre de usuario: %s\n", current->user.username);
             printf("Alias: %s\n", current->user.alias);
             printf("Edad: %d\n", current->user.age);
-            printf("Correo electrónico: %s\n", current->user.email);
-            printf("Ubicación actual: %s\n", current->user.location);
+            printf("Correo electronico: %s\n", current->user.email);
+            printf("Ubicacion actual: %s\n", current->user.location);
             printf("Gustos o preferencias:\n");
             for (int i = 0; i < 5; i++) {
                 printf("- %s\n", current->user.likes[i]);
@@ -169,7 +169,7 @@ void imprimir_user_info(User user) {
     printf("Alias: %s\n", user.alias);
     printf("Edad: %d\n", user.age);
     printf("Correo electrónico: %s\n", user.email);
-    printf("Ubicación actual: %s\n", user.location);
+    printf("Ubicacion actual: %s\n", user.location);
     printf("Gustos o preferencias:\n");
     for (int i = 0; i < 5; i++) {
         printf("- %s\n", user.likes[i]);
@@ -190,66 +190,6 @@ Node* buscar_usuario(Node* userList, const char* username) {
 
 
 
-
-//estructuras de colas
-
-// Función para crear una cola vacía
-Queue create_queue() {
-    Queue queue;
-    queue.front = NULL;
-    queue.rear = NULL;
-    return queue;
-}
-
-// Función para verificar si la cola está vacía
-int is_empty_queue(Queue* queue) {
-    return (queue->front == NULL);
-}
-
-// Función para encolar un elemento en la cola
-void enqueue(QueueNode** front, QueueNode** rear, struct FriendRequest* data) {
-    QueueNode* newNode = (QueueNode*)malloc(sizeof(QueueNode));
-    newNode->data = (struct User*)data;
-    newNode->next = NULL;
-
-    if (*front == NULL) {
-        *front = newNode;
-        *rear = newNode;
-    } else {
-        (*rear)->next = newNode;
-        *rear = newNode;
-    }
-}
-
-
-
-// Función para desencolar un elemento de la cola
-void dequeue(Queue* queue) {
-    if (is_empty_queue(queue)) {
-        printf("Error: La cola está vacía.\n");
-        return;
-    }
-
-    QueueNode* temp = queue->front;
-    queue->front = queue->front->next;
-
-    if (queue->front == NULL) {
-        queue->rear = NULL;
-    }
-
-    free(temp);
-}
-
-// Función para obtener el elemento frontal de la cola
-User front(Queue* queue) {
-    if (is_empty_queue(queue)) {
-        printf("Error: La cola está vacía.\n");
-        User dummyUser;
-        return dummyUser;
-    }
-
-    return *queue->front->data;
-}
 
 
 
@@ -317,8 +257,126 @@ void enviar_solicitud_amistad(Node** userList, const char* senderUsername) {
 
 
 // Gestionar las solicitudes pendientes
+// Inicializar una cola vacía
+void initializeQueue(Queue* queue) {
+    queue->front = NULL;
+    queue->rear = NULL;
+}
 
+// Verificar si la cola está vacía
+int isQueueEmpty(Queue* queue) {
+    return (queue->front == NULL);
+}
 
+// Insertar un elemento en la cola
+void enqueue(Queue* queue, struct User* user) {
+    QueueNode* newNode = (QueueNode*)malloc(sizeof(QueueNode));
+    newNode->data = user;
+    newNode->next = NULL;
+
+    if (isQueueEmpty(queue)) {
+        queue->front = newNode;
+        queue->rear = newNode;
+    } else {
+        queue->rear->next = newNode;
+        queue->rear = newNode;
+    }
+}
+
+// Eliminar un elemento de la cola
+struct User* dequeue(Queue* queue) {
+    if (isQueueEmpty(queue)) {
+        return NULL;
+    } else {
+        QueueNode* frontNode = queue->front;
+        struct User* userData = frontNode->data;
+        queue->front = frontNode->next;
+        if (queue->front == NULL) {
+            queue->rear = NULL;
+        }
+        free(frontNode);
+        return userData;
+    }
+}
+
+// Función para gestionar las solicitudes de amistad
+// Función para gestionar las solicitudes de amistad
+void gestionar_solicitudes_amistad(struct User* currentUser) {
+    Queue requestQueue;
+    initializeQueue(&requestQueue);
+
+    // Agregar todas las solicitudes a la cola
+    FriendRequest* currentRequest = currentUser->friendRequests;
+    while (currentRequest != NULL) {
+        enqueue(&requestQueue, currentRequest->sender);
+        currentRequest = currentRequest->next;
+    }
+
+    printf("Lista de solicitudes de amistad:\n");
+
+    AcceptedRequest* acceptedRequests = NULL;  // Lista de solicitudes aceptadas
+
+    while (!isQueueEmpty(&requestQueue)) {
+        struct User* sender = dequeue(&requestQueue);
+
+        printf("- %s te ha enviado una solicitud de amistad. "
+               "Deseas aceptarla? (1: Aceptar, 0: Denegar): ", sender->username);
+        int option;
+        scanf("%d", &option);
+
+        if (option == 1) {
+            // Aceptar solicitud
+            Friend* newFriend = (Friend*)malloc(sizeof(Friend));
+            newFriend->user = sender;
+            newFriend->next = NULL;
+
+            // Agregar amigo a la lista de amigos
+            if (currentUser->friends == NULL) {
+                currentUser->friends = newFriend;
+            } else {
+                Friend* currentFriend = currentUser->friends;
+                while (currentFriend->next != NULL) {
+                    currentFriend = currentFriend->next;
+                }
+                currentFriend->next = newFriend;
+            }
+
+            printf("Has aceptado la solicitud de amistad de %s.\n", sender->username);
+
+            // Agregar solicitud a la lista de solicitudes aceptadas
+            AcceptedRequest* newAcceptedRequest = (AcceptedRequest*)malloc(sizeof(AcceptedRequest));
+            newAcceptedRequest->sender = sender;
+            newAcceptedRequest->next = acceptedRequests;
+            acceptedRequests = newAcceptedRequest;
+        } else if (option == 0) {
+            // Denegar solicitud
+            printf("Has denegado la solicitud de amistad de %s.\n", sender->username);
+        } else {
+            printf("Opción no válida. Seleccione 1 o 0.\n");
+            enqueue(&requestQueue, sender);
+        }
+    }
+
+    // Liberar la lista de solicitudes de amistad
+    while (currentUser->friendRequests != NULL) {
+        FriendRequest* tempRequest = currentUser->friendRequests;
+        currentUser->friendRequests = currentUser->friendRequests->next;
+        free(tempRequest);
+    }
+
+    currentUser->friendRequests = NULL;
+
+    // Liberar la lista de solicitudes aceptadas
+    while (acceptedRequests != NULL) {
+        AcceptedRequest* tempAcceptedRequest = acceptedRequests;
+        acceptedRequests = acceptedRequests->next;
+        free(tempAcceptedRequest);
+    }
+
+    if (currentUser->friendRequests == NULL) {
+        printf("No tienes solicitudes de amistad pendientes.\n");
+    }
+}
 // Realizar una publicación
 
 
@@ -327,10 +385,7 @@ void enviar_solicitud_amistad(Node** userList, const char* senderUsername) {
 // Listar las publicaciones del usuario seleccionado
 
 
-// Volver al menú principal
-void volver_menu_principal() {
-    printf("Volviendo al menú principal...\n");
-}
+
 
 // Función del submenú del usuario
 // Declaración de variable global
@@ -346,13 +401,16 @@ void setSubMenuOption(int option) {
     subMenuOption = option;
 }
 
-// ... resto del código ...
 
+// Volver al menú principal
+void volver_menu_principal(int* mainOption) {
+    *mainOption = 0;
+    setSubMenuOption(0); // se usa una flag para poder volver para atras, se ve en la funcion de mmain de llamar_submenu.
+}
 // Función del submenú del usuario
 // Función del submenú del usuario
 void submenu_usuario(Node* currentUser, Node* userList) {
     int option;
-
     do {
         printf("\n---- Submenú del Usuario ----\n");
         printf("1. Enviar solicitud de amistad\n");
@@ -364,33 +422,28 @@ void submenu_usuario(Node* currentUser, Node* userList) {
         scanf("%d", &option);
 
         switch (option) {
-            case 1: {
-
+            case 1:
                 enviar_solicitud_amistad(&userList, currentUser->user.username);
-
                 break;
-            }
             case 2:
-
+                gestionar_solicitudes_amistad(&(currentUser->user));
                 break;
             case 3:
-
+                // Implementa la lógica para realizar una publicación
                 break;
-            case 4: {
-
+            case 4:
+                // Implementa la lógica para listar las publicaciones de un usuario
                 break;
-            }
             case 5:
-                volver_menu_principal();
-                break;
+                volver_menu_principal(&option);
+                return;  // Regresar al menú principal
             default:
                 printf("Opción no válida. Seleccione una opción del 1 al 5.\n");
                 break;
         }
 
-        // Actualizamos el valor de subMenuOption
-        setSubMenuOption(getSubMenuOption() + 1);
-
-    } while (getSubMenuOption() != 5);
+    } while (1);
 }
+
+
 
