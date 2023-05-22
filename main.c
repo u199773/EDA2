@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "utils.h"
-
+#include <time.h>
 
 
 void get_username(Node** userList) {
@@ -13,13 +13,7 @@ void get_username(Node** userList) {
     add_user(userList, username);
 }
 
-void find_user() {
-    char word[MAX_WORD_LENGTH];
-    printf("Ingresa el usuario que quieres encontrar: ");
-    scanf("%s", word);
-    // str_to_lowercase(word);
-    // Node* find_in_list(LinkedList l, char* word);
-}
+
 
 void imprimir_lista(Node* userList) {
     Node* current = userList;
@@ -30,12 +24,12 @@ void imprimir_lista(Node* userList) {
     }
 }
 //Node* llamar_buscar_usuario(Node* userList) {
-   // char username[MAX_USERNAME_LENGTH];
-  //  printf("Ingrese el nombre de usuario: ");
-   // scanf("%s", username);
+// char username[MAX_USERNAME_LENGTH];
+//  printf("Ingrese el nombre de usuario: ");
+// scanf("%s", username);
 
-  //  Node* usuarioEncontrado = buscar_usuario(userList, username);
-  //  return usuarioEncontrado;
+//  Node* usuarioEncontrado = buscar_usuario(userList, username);
+//  return usuarioEncontrado;
 //}
 int llamar_submenu(Node* userList) {
     char username[MAX_USERNAME_LENGTH];
@@ -57,6 +51,14 @@ int llamar_submenu(Node* userList) {
     }
 }
 
+void generar_usuarios_proceso(Node** userList, int cantidad) {
+    generar_usuarios(userList, cantidad);
+
+    // Solicitar una entrada adicional para mantener la consola abierta
+    printf("\nPresione cualquier tecla para volver al menú principal...");
+    getchar();
+    getchar(); // Se agregan dos llamadas a getchar() para capturar la entrada del usuario
+}
 
 
 
@@ -69,7 +71,8 @@ int main() {
         printf("1. Insertar un nuevo usuario\n");
         printf("2. Listar todos los usuarios existentes\n");
         printf("3. Salir\n");
-        printf("4. Submenu\n");
+        printf("4. Log in\n");
+        printf("5. Ingresar 10 usuarios\n");
         printf("Seleccione una opcion: ");
         scanf("%d", &option);
 
@@ -91,14 +94,17 @@ int main() {
                     }
                 }
                 break;
-
+            case 5:
+                generar_usuarios_proceso(&userList, 10);
+                option = 0; // Cambia el valor para que no termine el bucle
+                break;
 
             default:
-                printf("Opción no válida. Seleccione una opción del 1 al 3.\n");
+                printf("Opción no válida. Seleccione una opción del 1 al 5.\n");
                 break;
         }
 
-    } while (option != 4);
+    } while (option != 3);
 
     // Liberar memoria de la lista de usuarios
     Node* current = userList;
