@@ -599,11 +599,75 @@ void agregar_amigos_random(User* currentUser, Node* userList) {
 
 // Realizar una publicación
 
+// Función para inicializar una lista vacía
+void initializeList(List* list) {
+    list->head = NULL;
+    list->size = 0;
+}
+
+// Función para agregar una publicación a la lista de un usuario
+void addPostToUser(User* user, const char* content) {
+    if (user == NULL || content == NULL)
+        return;
+
+    Post* newPost = (Post*)malloc(sizeof(Post));
+    newPost->author = user;
+    strncpy(newPost->content, content, MAX_CONTENT_LENGTH);
+    newPost->content[MAX_CONTENT_LENGTH - 1] = '\0';
+    newPost->next = NULL;
+
+    if (user->postsCount == 0) {
+        user->posts = newPost;
+    } else {
+        Post* currentPost = user->posts;
+        while (currentPost->next != NULL) {
+            currentPost = currentPost->next;
+        }
+        currentPost->next = newPost;
+    }
+
+    user->postsCount++;
+}
+
+// Función para realizar una publicación en el perfil del usuario actual
+void makePost(User* currentUser) {
+    if (currentUser == NULL)
+        return;
+
+    char content[MAX_CONTENT_LENGTH];
+    printf("Ingrese el contenido de la publicacion (máximo %d caracteres): ", MAX_CONTENT_LENGTH);
+
+    // Limpiar el búfer antes de leer la entrada del usuario
+    fflush(stdin);
+
+    fgets(content, sizeof(content), stdin);
+
+    // Eliminar el carácter de nueva línea del final de la cadena
+    if (strlen(content) > 0 && content[strlen(content) - 1] == '\n') {
+        content[strlen(content) - 1] = '\0';
+    }
+
+    addPostToUser(currentUser, content);
+    printf("La publicacion se ha realizado correctamente.\n");
+}
+
 
 
 
 // Listar las publicaciones del usuario seleccionado
 
+void printUserPosts(User* user) {
+    if (user == NULL)
+        return;
+
+    printf("Publicaciones de %s:\n", user->username);
+
+    Post* currentPost = user->posts;
+    while (currentPost != NULL) {
+        printf("- %s\n", currentPost->content);
+        currentPost = currentPost->next;
+    }
+}
 
 
 
@@ -641,8 +705,8 @@ void submenu_usuario(Node* currentUser, Node* userList) {
         printf("6. Volver al menu principal\n");
         printf("7. Info Usuario\n");
         printf("8. Ordenar Usuarios por edad\n");
-        printf("3. Realizar una publicación\n");
-        printf("4. Listar las publicaciones de un usuario\n");
+        printf("9. Realizar una publicación\n");
+        printf("10. Listar mis publiccaciones\n");
         printf("Seleccione una opcion: ");
         scanf("%d", &option);
 
@@ -673,6 +737,14 @@ void submenu_usuario(Node* currentUser, Node* userList) {
                 break;
             case 8:
                 ordenar_por_edad(userList);
+                break;
+            case 9:
+
+                makePost(&(currentUser->user));
+
+                break;
+            case 10:
+                printUserPosts(&(currentUser->user));
                 break;
             default:
                 printf("Opcion no valida. Seleccione una opcion del 1 al 5.\n");
