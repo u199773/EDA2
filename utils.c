@@ -263,7 +263,7 @@ Node* buscar_usuario(Node* userList, const char* username) {
 // Enviar solicitud de amistad
 void enviar_solicitud_amistad(Node** userList, const char* senderUsername) {
     char nombreUsuario[MAX_USERNAME_LENGTH];
-    printf("Ingrese el nombre de usuario al que desea enviar la solicitud: ");
+    printf("Ingrese el nombre de usuario al que desea darle like: ");
     scanf("%s", nombreUsuario);
 
     Node* current = *userList;
@@ -305,7 +305,7 @@ void enviar_solicitud_amistad(Node** userList, const char* senderUsername) {
                 currentRequest->next = newRequest;
             }
 
-            printf("Solicitud de amistad enviada a %s.\n", nombreUsuario);
+            printf("Like enviado correctamente a %s.\n", nombreUsuario);
             return;
         }
         current = current->next;
@@ -372,15 +372,15 @@ void gestionar_solicitudes_amistad(struct User* currentUser) {
         currentRequest = currentRequest->next;
     }
 
-    printf("Lista de solicitudes de amistad:\n");
+    printf("Lista de personas a las que les he gustado:\n");
 
     AcceptedRequest* acceptedRequests = NULL;  // Lista de solicitudes aceptadas
 
     while (!isQueueEmpty(&requestQueue)) {
         struct User* sender = dequeue(&requestQueue);
 
-        printf("- %s te ha enviado una solicitud de amistad. "
-               "Deseas aceptarla? (1: Aceptar, 0: Denegar): ", sender->username);
+        printf("- %s te ha enviado un like. "
+               "Deseas aceptarlo? (1: Aceptar, 0: Denegar): ", sender->username);
         int option;
         scanf("%d", &option);
 
@@ -401,7 +401,7 @@ void gestionar_solicitudes_amistad(struct User* currentUser) {
                 currentFriend->next = newFriend;
             }
 
-            printf("Has aceptado la solicitud de amistad de %s.\n", sender->username);
+            printf("Has hecho match con %s.\n", sender->username);
 
             // Agregar solicitud a la lista de solicitudes aceptadas
             AcceptedRequest* newAcceptedRequest = (AcceptedRequest*)malloc(sizeof(AcceptedRequest));
@@ -410,7 +410,7 @@ void gestionar_solicitudes_amistad(struct User* currentUser) {
             acceptedRequests = newAcceptedRequest;
         } else if (option == 0) {
             // Denegar solicitud
-            printf("Has denegado la solicitud de amistad de %s.\n", sender->username);
+            printf("Has denegado el like de %s.\n", sender->username);
         } else {
             printf("Opción no valida. Seleccione 1 o 0.\n");
             enqueue(&requestQueue, sender);
@@ -434,7 +434,7 @@ void gestionar_solicitudes_amistad(struct User* currentUser) {
     }
 
     if (currentUser->friendRequests == NULL) {
-        printf("No tienes solicitudes de amistad pendientes.\n");
+        printf("No tienes likes pendientes.\n");
     }
 }
 
@@ -443,9 +443,9 @@ void imprimir_solicitudes_amistad(FriendRequest* solicitudes) {
     clock_t start_time = clock();
 
     if (solicitudes == NULL) {
-        printf("No tienes solicitudes de amistad pendientes.\n");
+        printf("No tienes likes pendientes.\n");
     } else {
-        printf("Solicitudes de amistad pendientes:\n");
+        printf("Mis posibles matches:\n");
         int count = 1;
         FriendRequest* currentRequest = solicitudes;
         while (currentRequest != NULL) {
@@ -468,9 +468,9 @@ void imprimir_solicitudes_aceptadas(Friend* friends) {
     clock_t start_time = clock();
 
     if (friends == NULL) {
-        printf("No tienes solicitudes de amistad aceptadas.\n");
+        printf("No tienes ningun match.\n");
     } else {
-        printf("Solicitudes de amistad aceptadas:\n");
+        printf("Mis matches:\n");
         int count = 1;
         Friend* currentFriend = friends;
         while (currentFriend != NULL) {
@@ -537,7 +537,7 @@ void agregar_amigos_random(User* currentUser, Node* userList) {
         }
     }
 
-    printf("Usuarios aleatorios disponibles:\n");
+    printf("Posibles matches disponibles:\n");
     int index = 1;
     StackNode* tempStackNode = randomUsersStack.top;
     while (tempStackNode != NULL) {
@@ -550,7 +550,7 @@ void agregar_amigos_random(User* currentUser, Node* userList) {
     // Descartar el carácter de nueva línea residual
     getchar();
 
-    printf("Seleccione el numero de los usuarios que desea agregar como amigos (separados por comas): ");
+    printf("Seleccione el numero de los usuarios que desea darle like (separados por comas): ");
     char input[100];
     scanf("%99s", input);  // Lee un máximo de 99 caracteres para evitar desbordamiento
 
@@ -577,7 +577,7 @@ void agregar_amigos_random(User* currentUser, Node* userList) {
                 newFriendRequest->next = currentUser->friendRequests;
                 currentUser->friendRequests = newFriendRequest;
 
-                printf("Has enviado una solicitud de amistad a %s.\n", selectedUser->username);
+                printf("Has enviado un like a %s.\n", selectedUser->username);
             }
         }
         token = strtok(NULL, ",");
@@ -648,7 +648,7 @@ void makePost(User* currentUser) {
     }
 
     addPostToUser(currentUser, content);
-    printf("La publicacion se ha realizado correctamente.\n");
+    printf("Tus futuros matches ya pueden ver tu publicacion.\n");
 }
 
 
@@ -697,15 +697,15 @@ void submenu_usuario(Node* currentUser, Node* userList) {
     int option;
     do {
         printf("\n---- Submenu del Usuario ----\n");
-        printf("1. Enviar solicitud de amistad\n");
-        printf("2. Gestionar las solicitudes pendientes\n");
-        printf("3. Mis solicitudes\n");
-        printf("4. Mis amigos\n");
-        printf("5. Agregar amigos desconocidos\n");
+        printf("1. Enviar un like\n");
+        printf("2. Gestionar mis likes \n");
+        printf("3. Mis posibles matches\n");
+        printf("4. Mis matches\n");
+        printf("5. Hacer matches desconocidos\n");
         printf("6. Volver al menu principal\n");
         printf("7. Info Usuario\n");
         printf("8. Ordenar Usuarios por edad\n");
-        printf("9. Realizar una publicación\n");
+        printf("9. Realizar una publicación, para que te conozcan un poco mas\n");
         printf("10. Listar mis publiccaciones\n");
         printf("Seleccione una opcion: ");
         scanf("%d", &option);

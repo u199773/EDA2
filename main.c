@@ -69,7 +69,7 @@ int main() {
     int mainOption = 0;
 
     do {
-        printf("\n---- Menu Principal ----\n");
+        printf("\n---- Meet me ----\n");
         printf("1. Insertar un nuevo usuario\n");
         printf("2. Listar todos los usuarios existentes\n");
         printf("3. Salir\n");
