@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include "utils.h"
 //
-
+#include <time.h>
 
 
 
@@ -438,7 +438,10 @@ void gestionar_solicitudes_amistad(struct User* currentUser) {
     }
 }
 
+//funcion 2 que calcula el tiempo de ejecucion
 void imprimir_solicitudes_amistad(FriendRequest* solicitudes) {
+    clock_t start_time = clock();
+
     if (solicitudes == NULL) {
         printf("No tienes solicitudes de amistad pendientes.\n");
     } else {
@@ -453,10 +456,17 @@ void imprimir_solicitudes_amistad(FriendRequest* solicitudes) {
             currentRequest = currentRequest->next;
         }
     }
+
+    clock_t end_time = clock();
+    double elapsed_time = (double)(end_time - start_time) / CLOCKS_PER_SEC;
+
+    printf("Tiempo de ejecución: %.2f segundos.\n", elapsed_time);
 }
 
-
+// funcion 3 que calcula el tiempo de ejecucion
 void imprimir_solicitudes_aceptadas(Friend* friends) {
+    clock_t start_time = clock();
+
     if (friends == NULL) {
         printf("No tienes solicitudes de amistad aceptadas.\n");
     } else {
@@ -471,9 +481,15 @@ void imprimir_solicitudes_aceptadas(Friend* friends) {
             currentFriend = currentFriend->next;
         }
     }
+
+    clock_t end_time = clock();
+    double elapsed_time = (double)(end_time - start_time) / CLOCKS_PER_SEC;
+
+    printf("Tiempo de ejecución: %.2f segundos.\n", elapsed_time);
 }
 
 void agregar_amigos_random(User* currentUser, Node* userList) {
+    clock_t start_time = clock();
     Stack randomUsersStack;
     randomUsersStack.top = NULL;
     randomUsersStack.size = 0;
@@ -572,6 +588,10 @@ void agregar_amigos_random(User* currentUser, Node* userList) {
         randomUsersStack.top = randomUsersStack.top->next;
         free(temp);
     }
+    clock_t end_time = clock();
+    double elapsed_time = (double)(end_time - start_time) / CLOCKS_PER_SEC;
+
+    printf("Tiempo de ejecución: %.2f segundos.\n", elapsed_time);
 }
 
 
