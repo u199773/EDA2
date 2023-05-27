@@ -651,6 +651,88 @@ void makePost(User* currentUser) {
     printf("Tus futuros matches ya pueden ver tu publicacion.\n");
 }
 
+void printTopWords(Post** posts) {
+    if (posts == NULL || *posts == NULL)
+        return;
+
+    Dictionary* dictionary = NULL;
+    Post* currentPost = *posts;
+
+    while (currentPost != NULL) {
+        char* token = strtok(currentPost->content, " ");
+        while (token != NULL) {
+            if (dictionary == NULL) {
+                dictionary = (Dictionary*)malloc(sizeof(Dictionary));
+                dictionary->next = NULL;
+                dictionary->count = 1;
+                strncpy(dictionary->word, token, MAX_WORD_LENGTH);
+                dictionary->word[MAX_WORD_LENGTH - 1] = '\0';
+            } else {
+                Dictionary* currentWord = dictionary;
+                while (currentWord != NULL) {
+                    if (strcmp(currentWord->word, token) == 0) {
+                        currentWord->count++;
+                        break;
+                    }
+                    if (currentWord->next == NULL) {
+                        Dictionary* newWord = (Dictionary*)malloc(sizeof(Dictionary));
+                        newWord->next = NULL;
+                        newWord->count = 1;
+                        strncpy(newWord->word, token, MAX_WORD_LENGTH);
+                        newWord->word[MAX_WORD_LENGTH - 1] = '\0';
+                        currentWord->next = newWord;
+                        break;
+                    }
+                    currentWord = currentWord->next;
+                }
+            }
+            token = strtok(NULL, " ");
+        }
+        currentPost = currentPost->next;
+    }
+
+    // Ordenar el diccionario en orden descendente por conteo
+    Dictionary* currentWord = dictionary;
+    Dictionary* sortedDictionary = NULL;
+    while (currentWord != NULL) {
+        Dictionary* nextWord = currentWord->next;
+        Dictionary* prevWord = NULL;
+        Dictionary* temp = sortedDictionary;
+
+        while (temp != NULL && temp->count > currentWord->count) {
+            prevWord = temp;
+            temp = temp->next;
+        }
+
+        if (prevWord == NULL) {
+            currentWord->next = sortedDictionary;
+            sortedDictionary = currentWord;
+        } else {
+            prevWord->next = currentWord;
+            currentWord->next = temp;
+        }
+
+        currentWord = nextWord;
+    }
+
+    // Imprimir las palabras más usadas
+    printf("Palabras mas usadas:\n");
+    int count = 0;
+    currentWord = sortedDictionary;
+    while (currentWord != NULL && count < TOP_WORDS_COUNT) {
+        printf("%s: %d\n", currentWord->word, currentWord->count);
+        currentWord = currentWord->next;
+        count++;
+    }
+
+    // Liberar la memoria utilizada por el diccionario
+    currentWord = dictionary;
+    while (currentWord != NULL) {
+        Dictionary* nextWord = currentWord->next;
+        free(currentWord);
+        currentWord = nextWord;
+    }
+}
 
 
 
@@ -705,8 +787,9 @@ void submenu_usuario(Node* currentUser, Node* userList) {
         printf("6. Volver al menu principal\n");
         printf("7. Info Usuario\n");
         printf("8. Ordenar Usuarios por edad\n");
-        printf("9. Realizar una publicación, para que te conozcan un poco mas\n");
+        printf("9. Realizar una publicacion, para que te conozcan un poco mas\n");
         printf("10. Listar mis publiccaciones\n");
+        printf("11. TOP 10 palabras en tendencia\n");
         printf("Seleccione una opcion: ");
         scanf("%d", &option);
 
@@ -722,13 +805,10 @@ void submenu_usuario(Node* currentUser, Node* userList) {
                 break;
             case 4:
                 imprimir_solicitudes_aceptadas(currentUser->user.friends);
-
                 break;
             case 5:
                 agregar_amigos_random(&(currentUser->user), userList);
-
                 break;
-
             case 6:
                 volver_menu_principal(&option);
                 return;  // Regresar al menú principal
@@ -739,19 +819,17 @@ void submenu_usuario(Node* currentUser, Node* userList) {
                 ordenar_por_edad(userList);
                 break;
             case 9:
-
                 makePost(&(currentUser->user));
-
                 break;
             case 10:
                 printUserPosts(&(currentUser->user));
                 break;
+            case 11:
+                printTopWords(&(currentUser->user.posts));
+                break;
             default:
-                printf("Opcion no valida. Seleccione una opcion del 1 al 5.\n");
+                printf("Opcion no valida. Seleccione una opcion del 1 al 11.\n");
                 break;
         }
-
     } while (1);
 }
-
-

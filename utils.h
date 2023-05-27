@@ -10,6 +10,8 @@
 #define MAX_LIKES_COUNT 5
 #define MAX_WORD_LENGTH 50
 
+#define TOP_WORDS_COUNT 10
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -66,14 +68,21 @@ typedef struct Stack {
 
 
 typedef struct Post {
-    struct User* author;  // Cambiar el tipo de dato a User*
+    struct User* author;
     char content[MAX_CONTENT_LENGTH];
     struct Post* next;
 } Post;
+
 typedef struct List {
     Post* head;
     int size;
 } List;
+
+typedef struct Dictionary {
+    int count;
+    struct Dictionary* next;
+    char word[MAX_WORD_LENGTH];
+} Dictionary;
 
 typedef struct User {
     char username[MAX_USERNAME_LENGTH];
@@ -147,5 +156,7 @@ void initializeQueue(Queue* queue);
 int isQueueEmpty(Queue* queue);
 void enqueue(Queue* queue, struct User* user);
 struct User* dequeue(Queue* queue);
+void printTopWords(Post** posts);
+
 
 
